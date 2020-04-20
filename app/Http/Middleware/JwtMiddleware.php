@@ -23,11 +23,11 @@ class JwtMiddleware
     try {
       $user = JWTAuth::parseToken()->authenticate();
     } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
-      return Controller::responseJson(401, $e->getMessage());
+      return response()->json(['error' => $e->getMessage()], 401);
     } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-      return Controller::responseJson(401, $e->getMessage());
+      return response()->json(['error' => $e->getMessage()], 401);
     } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
-      return Controller::responseJson(401, $e->getMessage());
+      return response()->json(['error' => $e->getMessage()], 401);
     }
     return $next($request);
   }

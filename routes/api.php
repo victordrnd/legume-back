@@ -16,6 +16,16 @@ use Illuminate\Support\Facades\Route;
 Route::post('auth/login', 'AuthController@login');
 Route::post('auth/signup', 'AuthController@signup');
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::group(['middleware' => 'jwt.verify'], function () {
+    Route::get('/auth/current', 'AuthController@getCurrentUser');
+    
+    Route::group(['prefix' => 'schedule'], function () {
+        Route::get('/', 'ScheduleController@getAll');
+    });
+
+    Route::group(['prefix' => 'booking'], function(){
+        Route::get('/my',   'BookingController@getMyBookings');
+        Route::post('/book',   'BookingController@createBooking');
+    });
+});
+
