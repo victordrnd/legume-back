@@ -11,20 +11,7 @@ class ScheduleService
 {
     public function getAvailability()
     {
-        BusinessTime::enable(Carbon::class, [
-            'monday' => [],
-            'tuesday' => ['15:45-20:00'],
-            'wednesday' => [],
-            'thursday' => [],
-            'friday' => ['15:45-20:00'],
-            'saturday' => ['09:45-13:00'],
-            'sunday' => [],
-            'exceptions' => [
-                '01-01' => [],
-                '12-25' => [],
-            ],
-            'holidays' => [],
-        ]);
+        $this->registerSchedule();
         $start_date = Carbon::now()->addHours(2);
         $start_date->minute = ceil($start_date->minute / Schedule::PERIOD_TIME) * Schedule::PERIOD_TIME;
         $start_date->second = 0;
@@ -43,5 +30,22 @@ class ScheduleService
             }
         }
         return $dates;
+    }
+
+    public function registerSchedule(){
+        BusinessTime::enable(Carbon::class, [
+            'monday' => [],
+            'tuesday' => ['15:45-20:00'],
+            'wednesday' => [],
+            'thursday' => [],
+            'friday' => ['15:45-20:00'],
+            'saturday' => ['09:45-13:00'],
+            'sunday' => [],
+            'exceptions' => [
+                '01-01' => [],
+                '12-25' => [],
+            ],
+            'holidays' => [],
+        ]);
     }
 }

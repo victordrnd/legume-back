@@ -27,5 +27,9 @@ Route::group(['middleware' => 'jwt.verify'], function () {
         Route::get('/my',   'BookingController@getMyBookings');
         Route::post('/book',   'BookingController@createBooking');
     });
+
+    Route::group(['prefix' => 'products'], function(){
+        Route::post('/', 'ProduitController@getAllProducts');
+    });
 });
 

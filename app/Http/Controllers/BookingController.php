@@ -5,11 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Booking\BookRequest;
 use Illuminate\Http\Request;
 use App\Booking;
+use App\Http\Services\ScheduleService;
 use App\Status;
 use Carbon\Carbon;
 
 class BookingController extends Controller
 {
+    private $scheduleService;
+    public function __construct(ScheduleService $scheduleService){
+        $this->scheduleService = $scheduleService;
+    }
     public function getMyBookings(){
         $coming = Booking::where('user_id', auth()->user()->id)->where('schedule', '>=',Carbon::now())->with('status')->get();
         $past = Booking::where('user_id', auth()->user()->id)->where('schedule', '<',Carbon::now())->with('status')->get();
@@ -26,16 +31,17 @@ class BookingController extends Controller
      * @var string time "12:00:00"
      */
     public function createBooking(BookRequest $request){
-        $datetime = $request->date." ".$request->time;
+        $this->scheduleService->registerSchedule();
+        $datetime = Carbon::parse($request->date." ".$request->time);
         $count = Booking::where('schedule', $datetime)->count();
-        if($count < 5){
+        if($count < 5 && $datetime->isOpen()){
             $booking = Booking::create([
-                'schedule' => $datetime,
+                'schedule' => $datetime->toDateTimeString(),
                 'user_id' => auth()->user()->id,
                 'status_id' => Status::where('slug', 'waiting')->first()->id
             ]);
         }else{
-            return response()->json(['error' => "L'horraire demandé est déjà complet"], 422);
+            return response()->json(['error' => "L'horraire demandé n'est pas disponible"], 422);
         }
         return $booking;
     }
