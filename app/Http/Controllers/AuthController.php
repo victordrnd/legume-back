@@ -17,13 +17,14 @@ class AuthController extends Controller
   public function login(LoginRequest $request)
   {
     $credentials = $request->only(['email', 'password']);
-    if (!$token = auth()->attempt($credentials)) {
+    if (!$token = auth()->setTTL(525600)->attempt($credentials)) {
       return response()->json(['error' => 'Unauthorized'], 401);
     }
     $user = User::where('id', auth()->user()->id)->first();
     $data =  [
       'user' => $user,
       'token' => $token,
+      'expire' => auth()->factory()->getTTL() * 60
     ];
     return response()->json($data);
   }
@@ -44,7 +45,7 @@ class AuthController extends Controller
       'email' => $request->email,
       'password' =>  $password
     ];
-    if (!$token = auth()->attempt($credentials)) {
+    if (!$token = auth()->setTTL(525600)->attempt($credentials)) {
       return response()->json(['error' => 'Unauthorized'], 401);
     }
     $data =  [
