@@ -12,12 +12,12 @@ class ScheduleService
     public function getAvailability()
     {
         BusinessTime::enable(Carbon::class, [
-            'monday' => ['08:45-12:00', '13:15-18:00'],
-            'tuesday' => ['08:45-12:00', '13:15-18:00'],
-            'wednesday' => ['08:45-12:00', '13:15-18:00'],
-            'thursday' => ['08:45-12:00', '13:15-18:00'],
-            'friday' => ['08:45-12:00', '13:15-18:00'],
-            'saturday' => ['08:59-12:00'],
+            'monday' => [],
+            'tuesday' => ['15:45-20:00'],
+            'wednesday' => [],
+            'thursday' => [],
+            'friday' => ['15:45-20:00'],
+            'saturday' => ['09:45-13:00'],
             'sunday' => [],
             'exceptions' => [
                 '01-01' => [],

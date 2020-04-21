@@ -14,7 +14,7 @@ class AlterTableBookingAddStatusId extends Migration
     public function up()
     {
         Schema::table('bookings', function(Blueprint $table){
-            $table->integer('status_id')->unsigned()->index()->default(1)->nullable()->after('user_id');
+            $table->unsignedBigInteger('status_id')->index()->default(1)->nullable()->after('user_id');
             //$table->foreign('status_id')->references('id')->on('status');
         });
     }
