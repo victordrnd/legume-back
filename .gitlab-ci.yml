@@ -3,5 +3,5 @@ heroku:
     only:
     - master
     script:
-    - git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/legume-back.git HEAD:master
+    - git remote add -m heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/legume-back.git
     - git push -f heroku master
