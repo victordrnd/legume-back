@@ -3,5 +3,5 @@ heroku:
     only:
     - master
     script:
-    - git remote add -m heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/legume-back.git
-    - git push -f heroku master
+    - gem install dpl
+    - dpl heroku git --api_key $HEROKU_API_KEY --git https://git.heroku.com/legume-back.git --strategy api --app legume-back --cleanup
