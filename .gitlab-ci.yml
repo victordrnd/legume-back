@@ -4,4 +4,4 @@ heroku:
     - master
     script:
     - gem install dpl
-    - dpl heroku git --api_key $HEROKU_API_KEY --git https://git.heroku.com/legume-back.git --strategy api --app legume-back --cleanup
+    - dpl --provider=heroku --api-key=$HEROKU_API_KEY --strategy=git --app=legume-back
