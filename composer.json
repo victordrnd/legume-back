@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": ">=7.0.0",
+        "cmixin/business-time": "^1.5",
         "fideloper/proxy": "^4",
         "guzzlehttp/guzzle": "^6.3",
         "laravel/framework": "6.*",

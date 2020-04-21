@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Booking extends Model
 {
-    CONST MAX_PER_PERIOD = 5;
+    CONST MAX_PER_PERIOD = 3;
     
     protected $fillable = ['schedule', 'user_id', 'status_id'];
     
