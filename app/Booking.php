@@ -8,7 +8,7 @@ class Booking extends Model
 {
     CONST MAX_PER_PERIOD = 3;
     
-    protected $fillable = ['schedule', 'user_id', 'status_id'];
+    protected $fillable = ['schedule', 'user_id','order_id', 'status_id'];
     
 
     public function status(){
@@ -17,5 +17,9 @@ class Booking extends Model
 
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public function order(){
+        return $this->belongsTo(Order::class);
     }
 }

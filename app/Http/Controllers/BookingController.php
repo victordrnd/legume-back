@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Booking\BookRequest;
 use Illuminate\Http\Request;
 use App\Booking;
+use App\Http\Resources\BookingResource;
 use App\Http\Services\ScheduleService;
 use App\Status;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BookingController extends Controller
 {
+    
     private $scheduleService;
     public function __construct(ScheduleService $scheduleService){
         $this->scheduleService = $scheduleService;
@@ -48,7 +51,18 @@ class BookingController extends Controller
 
 
     public function getAllBookings(Request $req){
-        $bookings = Booking::where('schedule' ,'>=', Carbon::now())->with('user')->paginate($req->input('per_page', 15));
-        return $bookings;
+        $bookings = Booking::where('schedule' ,'>=', Carbon::now())
+                            ->paginate($req->input('per_page', 15));
+        return BookingResource::collection($bookings);
     }
+
+
+    public function getBooking($id){
+        try{
+            $booking = Booking::where('id',$id)->with('order')->firstOrFail();
+        }catch(ModelNotFoundException $e){
+            return response()->json(['error' => $e->getMessage()], 404);
+        }
+        return BookingResource::make($booking);
+    }   
 }
