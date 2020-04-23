@@ -7,6 +7,7 @@ use App\Http\Requests\Order\CreateOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Order;
 use App\OrderLine;
+use App\Status;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
