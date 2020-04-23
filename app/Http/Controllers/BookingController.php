@@ -45,4 +45,10 @@ class BookingController extends Controller
         }
         return $booking;
     }
+
+
+    public function getAllBookings(Request $req){
+        $bookings = Booking::where('schedule' ,'>=', Carbon::now())->with('user')->paginate($req->input('per_page', 15));
+        return $bookings;
+    }
 }
