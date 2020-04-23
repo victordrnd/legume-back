@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
             'libelle' => 'Panier gourmand',
             'origin' => 'France',
             'unit_price' => '25',
-            'unit' => '€',
+            'unit' => 'La pièce',
             'category_id' => 1,
             'import_id' => 1
         ]);
