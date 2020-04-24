@@ -5,7 +5,7 @@ namespace App\Providers;
 use App\Http\Resources\BookingResource;
 use App\Http\Resources\OrderResource;
 use Illuminate\Support\ServiceProvider;
-
+use Carbon\Carbon;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -25,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Carbon::setLocale('fr');
         OrderResource::withoutWrapping();
         BookingResource::withoutWrapping();
     }
