@@ -7,8 +7,14 @@ use App\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\ResetpasswordRequest;
+use App\Http\Requests\Auth\sendMailRequest;
 use App\Http\Requests\Auth\SignupRequest;
+use App\Mail\Auth\ResetpasswordMail;
+use App\Resetpassword;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -56,9 +62,37 @@ class AuthController extends Controller
   }
 
 
+  public function sendMail(sendMailRequest $request)
+  {
+    $token = Str::orderedUuid();
+    $user_id = User::where('email', $request->email)->first()->id;
+    Resetpassword::create([
+      'token' =>  $token,
+      'user_id' => $user_id
+    ]);
+    $details = [
+      'email' => $request->email,
+      'link' => 'localhost:8000/auth/resetpassword/token/' . $token
+    ];
+    Mail::to($request->email)->send(new ResetpasswordMail($details));
+    return response()->json('un email vous a été envoyé merci de vérifier votre boite mail', 200);
+  }
 
+  public function checkToken($token)
+  {
+    if ((Resetpassword::where('token', $token)->first() != null)) {
+      return response()->json('le token est valie', 200);
+    }
+    return response()->json('le token resnseigné est erroné', 401);
+  }
 
-
+  public function resetPassword(ResetpasswordRequest $request)
+  {
+    $user = User::where('id', Resetpassword::where('token', $request->token)->first()->user_id)->get();
+    $user->password = Hash::make($request->password);
+    $user->save();
+    return response()->json('Votre nouveau de mot de passe a bien été enregistré', 200);
+  }
 
   public function getCurrentUser()
   {
