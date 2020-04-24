@@ -24,14 +24,16 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     });
 
     Route::group(['prefix' => 'booking'], function(){
-        Route::get('/my',      'BookingController@getMyBookings');
-        Route::post('/book',   'BookingController@createBooking');
-        Route::get('/all',    'BookingController@getAllBookings');
-        Route::get('/{id}',    'BookingController@getBooking')->where('id', '[0-9]+');
+        Route::get('/my',       'BookingController@getMyBookings');
+        Route::post('/book',    'BookingController@createBooking');
+        Route::get('/all',      'BookingController@getAllBookings');
+        Route::get('/{id}',     'BookingController@getBooking')->where('id', '[0-9]+');
+        Route::delete('/{id}',   'BookingController@cancelBooking')->where('id', '[0-9]+');
     });
 
     Route::group(['prefix' => 'order'], function(){
         Route::post('/create',   'OrderController@createOrder');
+        Route::put('/prepare',   'OrderController@prepareOrder');
         Route::put('/edit',      'OrderController@editQuantity');
     });
 

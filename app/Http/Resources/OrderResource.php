@@ -16,6 +16,7 @@ class OrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'preparator' => $this->preparator,
             'items' => $this->items,
             'total_price' => $this->items->sum(function($line){
                 return $line->product->unit_price * $line->quantity;

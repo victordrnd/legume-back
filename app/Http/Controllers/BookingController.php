@@ -52,6 +52,7 @@ class BookingController extends Controller
 
     public function getAllBookings(Request $req){
         $bookings = Booking::where('schedule' ,'>=', Carbon::now())
+                            ->where('status_id', '!=', Status::where('slug', 'canceled')->first()->id)
                             ->paginate($req->input('per_page', 15));
         return BookingResource::collection($bookings);
     }
@@ -65,4 +66,13 @@ class BookingController extends Controller
         }
         return BookingResource::make($booking);
     }   
+
+
+
+    public function cancelBooking($id){
+        $booking = Booking::where('id',$id)->update([
+            'status_id' => Status::where('slug', 'canceled')->first()->id
+        ]);
+        return BookingResource::make(Booking::find($id));
+    }
 }

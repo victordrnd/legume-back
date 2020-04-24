@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Booking;
 use App\Http\Requests\Order\CreateOrderRequest;
 use App\Http\Requests\Order\EditOrderQuantityRequest;
+use App\Http\Requests\Order\PrepareOrderRequest;
+use App\Http\Requests\Order\SetOrderPreparatorRequest;
 use App\Http\Resources\OrderResource;
 use App\Order;
 use App\OrderLine;
@@ -31,6 +33,13 @@ class OrderController extends Controller
         return OrderResource::make($order);
     }
 
+    public function prepareOrder(PrepareOrderRequest $req){
+        //TODO : check if current user is admin
+        Order::where('id', $req->order_id)->update([
+            'preparator_id' => auth()->user()->id
+        ]);
+        return OrderResource::make(Order::find($req->order_id));
+    }
 
     public function editQuantity(EditOrderQuantityRequest $req){
         foreach($req->items as $item){
@@ -42,5 +51,7 @@ class OrderController extends Controller
         }
         return OrderResource::make(Order::find($req->order_id));
     }
+
+
 
 }
