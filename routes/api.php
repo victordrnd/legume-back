@@ -31,7 +31,8 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     });
 
     Route::group(['prefix' => 'order'], function(){
-        Route::put('/create',   'OrderController@createOrder');
+        Route::post('/create',   'OrderController@createOrder');
+        Route::put('/edit',      'OrderController@editQuantity');
     });
 
     Route::group(['prefix' => 'products'], function(){

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Booking;
 use App\Http\Requests\Order\CreateOrderRequest;
+use App\Http\Requests\Order\EditOrderQuantityRequest;
 use App\Http\Resources\OrderResource;
 use App\Order;
 use App\OrderLine;
@@ -19,7 +20,8 @@ class OrderController extends Controller
             OrderLine::create([
                 'order_id' => $order->id,
                 'quantity' => $item['quantity'],
-                'product_id' => $item['id']
+                'product_id' => $item['id'],
+                'delivered_quantity' => 0
             ]);
         }
         Booking::find($req->booking_id)->update([
@@ -27,6 +29,18 @@ class OrderController extends Controller
             'status_id' => Status::where('slug', 'confirmed')->first()->id
         ]);
         return OrderResource::make($order);
+    }
+
+
+    public function editQuantity(EditOrderQuantityRequest $req){
+        foreach($req->items as $item){
+            OrderLine::where('product_id', $item['id'])
+                    ->where('order_id', $req->order_id)
+                    ->update([
+                        'delivered_quantity' => $item['delivered_quantity']
+                    ]);
+        }
+        return OrderResource::make(Order::find($req->order_id));
     }
 
 }
