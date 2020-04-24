@@ -26,7 +26,7 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     Route::group(['prefix' => 'booking'], function(){
         Route::get('/my',      'BookingController@getMyBookings');
         Route::post('/book',   'BookingController@createBooking');
-        Route::post('/all',    'BookingController@getAllBookings');
+        Route::get('/all',    'BookingController@getAllBookings');
         Route::get('/{id}',    'BookingController@getBooking')->where('id', '[0-9]+');
     });
 
