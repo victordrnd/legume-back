@@ -13,7 +13,7 @@ class ResetpasswordRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,7 @@ class ResetpasswordRequest extends FormRequest
     public function rules()
     {
         return [
-            'token' => 'required|exists:resetpasswords,token|token',
+            'token' => 'required|exists:resetpasswords,token|string',
             'password' => 'required|string',
         ];
     }

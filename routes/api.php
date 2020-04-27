@@ -17,7 +17,10 @@ Route::post('auth/login', 'AuthController@login');
 Route::post('auth/signup', 'AuthController@signup');
 
 Route::group(['middleware' => 'jwt.verify'], function () {
-    Route::get('/auth/current', 'AuthController@getCurrentUser');
+    Route::group(['prefix' => 'auth'], function(){
+        Route::get('/current', 'AuthController@getCurrentUser');
+        Route::post('/resetpassword',  'AuthController@sendMail');
+    });
     
     Route::group(['prefix' => 'schedule'], function () {
         Route::get('/', 'ScheduleController@getAll');

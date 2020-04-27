@@ -10,11 +10,11 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\ResetpasswordRequest;
 use App\Http\Requests\Auth\sendMailRequest;
 use App\Http\Requests\Auth\SignupRequest;
-use App\Mail\Auth\ResetpasswordMail;
+use App\Http\Services\MailService;
 use App\Resetpassword;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -64,39 +64,39 @@ class AuthController extends Controller
 
   public function sendMail(sendMailRequest $request)
   {
+    try{
+      $user = User::where('email', $request->email)->firstOrFail();
+    }catch(ModelNotFoundException $e){
+      return response()->json(['error' => $e->getMessage()]);
+    }
     $token = Str::orderedUuid();
-    $user_id = User::where('email', $request->email)->first()->id;
     Resetpassword::create([
       'token' =>  $token,
-      'user_id' => $user_id
+      'user_id' => $user->id
     ]);
-    $details = [
-      'email' => $request->email,
-      'link' => 'localhost:8000/auth/resetpassword/token/' . $token
-    ];
-    Mail::to($request->email)->send(new ResetpasswordMail($details));
-    return response()->json('un email vous a été envoyé merci de vérifier votre boite mail', 200);
+    $link = env('APP_URL').'/auth/resetpassword?token=' . $token;
+    (new MailService)->sendResetPasswordMail($user, $link);
+    return true;
   }
 
-  public function checkToken($token)
-  {
-    if ((Resetpassword::where('token', $token)->first() != null)) {
-      return response()->json('le token est valie', 200);
-    }
-    return response()->json('le token resnseigné est erroné', 401);
-  }
 
   public function resetPassword(ResetpasswordRequest $request)
   {
-    $user = User::where('id', Resetpassword::where('token', $request->token)->first()->user_id)->get();
+    $user = Resetpassword::where('token', $request->token)->first()->user;
     $user->password = Hash::make($request->password);
     $user->save();
-    return response()->json('Votre nouveau de mot de passe a bien été enregistré', 200);
+    return $user;
   }
 
   public function getCurrentUser()
   {
     $user = User::where('id', auth()->user()->id)->first();
     return $user;
+  }
+
+
+  public function viewResetPassword(Request $req){
+    $token = $req->token;
+    return view('passwords-form', compact('token'));
   }
 }
