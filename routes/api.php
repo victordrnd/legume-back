@@ -38,7 +38,11 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     });
 
     Route::group(['prefix' => 'products'], function(){
-        Route::post('/', 'ProduitController@getAllProducts');
+        Route::post('/',            'ProduitController@getAllProducts');
+    });
+
+    Route::group(['prefix' => 'import'], function(){
+        Route::post('/new', 'ImportController@import');
     });
 
     
