@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Order;
 
+use App\Http\Requests\ApiRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PrepareOrderRequest extends FormRequest
+class PrepareOrderRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
