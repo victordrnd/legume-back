@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Imports\ImportRequest;
 use App\Import;
-use App\Imports\ProductsImport;
+use App\Imports\SheetsImport;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -16,10 +16,10 @@ class ImportController extends Controller
             'to' => $req->to
         ]);
         try{
-            \Excel::import(new ProductsImport($import->id), request()->file('file'));
+            \Excel::import(new SheetsImport($import->id), request()->file('file'));
         }catch(Exception $e){
             return response()->json(['error' => "Une erreur est présente dans le fichier, vérifier qu'aucune case ne soit vide"]);
         }
-        return Import::where('id', $import->id)->with('products')->first();
+        return Import::where('id', $import->id)->with('products', 'paniers')->first();
     }
 }

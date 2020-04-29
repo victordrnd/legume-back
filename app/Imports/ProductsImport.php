@@ -18,7 +18,6 @@ class ProductsImport implements ToCollection
     public function collection(Collection $rows)
     {
         unset($rows[0]);
-        //dd($rows);
         foreach ($rows as $row) 
         {
             if($row[0] && is_null($row[1]) && is_null($row[2]) && is_null($row[3])){

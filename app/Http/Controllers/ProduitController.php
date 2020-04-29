@@ -14,11 +14,10 @@ class ProduitController extends Controller
     public function getAllProducts(ProductAvailabilityRequest $req){
         $date = Carbon::parse($req->date) ?? Carbon::now();
         try{
-            $import = Import::where('from', '<=', $date)->where('to', '>=', $date)->orderBy('created_at', 'desc')->with('products', 'products.category')->firstOrFail();
+            $import = Import::where('from', '<=', $date)->where('to', '>=', $date)->orderBy('created_at', 'desc')->with('products.category','paniers.products.product.category')->firstOrFail();
         }catch(ModelNotFoundException $e){
             return response()->json(['error' => "Aucun produit n'est disponible pour la période demandée. Réessayez plus tard"], 422);
         }
-        $products = Produit::where('import_id', $import->id)->orderBy('category_id')->with('category')->get();
         return $import;
     }
 }

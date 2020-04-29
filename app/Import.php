@@ -11,4 +11,8 @@ class Import extends Model
     public function products(){
         return $this->hasMany(Produit::class,'import_id');
     }
+
+    public function paniers(){
+        return $this->hasMany(Panier::class);
+    }
 }
