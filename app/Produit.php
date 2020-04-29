@@ -14,5 +14,28 @@ class Produit extends Model
     public function category(){
         return $this->belongsTo(Category::class);
     }
+
+    public function lignes_panier(){
+        return $this->hasMany(LignePanier::class);
+    }
+
+    public function order_lines(){
+        return $this->hasMany(OrderLine::class, 'product_id');
+    }
+
+
+    protected static function boot() {
+        parent::boot();
+
+        static::deleting(function($product) {
+            $product->lignes_panier->each(function($lignes_panier) {
+                $lignes_panier->delete();
+            });
+
+            $product->order_lines->each(function($order_lines) {
+                $order_lines->delete();
+            });
+        });
+    }
 }
 

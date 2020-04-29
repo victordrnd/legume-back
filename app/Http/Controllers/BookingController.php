@@ -37,7 +37,7 @@ class BookingController extends Controller
         $this->scheduleService->registerSchedule();
         $datetime = Carbon::parse($request->date." ".$request->time);
         $count = Booking::where('schedule', $datetime)->count();
-        if($count < 5 && $datetime->isOpen()){
+        if($count < Booking::MAX_PER_PERIOD && $datetime->isOpen()){
             $booking = Booking::create([
                 'schedule' => $datetime->toDateTimeString(),
                 'user_id' => auth()->user()->id,
