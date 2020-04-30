@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\Role;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
@@ -20,9 +21,8 @@ class AuthController extends Controller
     if (!$token = auth()->setTTL(525600)->attempt($credentials)) {
       return response()->json(['error' => 'Unauthorized'], 401);
     }
-    $user = User::where('id', auth()->user()->id)->first();
     $data =  [
-      'user' => $user,
+      'user' => $this->getCurrentUser(),
       'token' => $token,
       'expire' => auth()->factory()->getTTL() * 60
     ];
@@ -39,6 +39,7 @@ class AuthController extends Controller
     $password = $request->password;
     $request->merge(['password' => Hash::make($password), 'role_id' => 1]);
     $user = new User();
+    $request->merge(['role_id' => Role::where('slug', Role::USER)->first()->id]);
     $user->fill($request->all());
     $user->save();
     $credentials = [
@@ -49,7 +50,7 @@ class AuthController extends Controller
       return response()->json(['error' => 'Unauthorized'], 401);
     }
     $data =  [
-      'user' => auth()->user(),
+      'user' => $this->getCurrentUser(),
       'token' => $token,
     ];
     return response()->json($data, 200);
@@ -62,7 +63,7 @@ class AuthController extends Controller
 
   public function getCurrentUser()
   {
-    $user = User::where('id', auth()->user()->id)->first();
+    $user = User::where('id', auth()->user()->id)->with('role')->first();
     return $user;
   }
 }

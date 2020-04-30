@@ -13,23 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(StatusSeederTableSeeder::class);
-
-        Import::create([
-            'from' => '2020-04-01',
-            'to' => '2020-06-01'
-        ]);
-        Category::create([
-            'libelle' => 'Nos paniers',
-            'slug' => 'panier'
-        ]);
-        Produit::create([
-            'libelle' => 'Panier gourmand',
-            'origin' => 'France',
-            'unit_price' => '25',
-            'unit' => 'La pièce',
-            'category_id' => 1,
-            'import_id' => 1
-        ]);
+        //$this->call(StatusSeederTableSeeder::class);
+        $this->call(RoleTableSeeder::class);
     }
 }

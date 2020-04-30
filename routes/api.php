@@ -33,15 +33,15 @@ Route::group(['middleware' => 'jwt.verify'], function () {
 
     Route::group(['prefix' => 'order'], function(){
         Route::post('/create',   'OrderController@createOrder');
-        Route::put('/prepare',   'OrderController@prepareOrder');
-        Route::put('/edit',      'OrderController@editQuantity');
+        Route::put('/prepare',   'OrderController@prepareOrder')->middleware('can:operator');
+        Route::put('/edit',      'OrderController@editQuantity')->middleware('can:operator');
     });
 
     Route::group(['prefix' => 'products'], function(){
         Route::post('/',            'ProduitController@getAllProducts');
     });
 
-    Route::group(['prefix' => 'import'], function(){
+    Route::group(['prefix' => 'import', 'middleware' => 'can:administrator'], function(){
         Route::post('/new', 'ImportController@import');
     });
 
