@@ -11,6 +11,10 @@ class Produit extends Model
     protected $hidden = ['created_at', 'updated_at', 'import_id'];
 
 
+    protected $appends = ['type'];
+
+
+
     public function category(){
         return $this->belongsTo(Category::class);
     }
@@ -23,6 +27,9 @@ class Produit extends Model
         return $this->hasMany(OrderLine::class, 'product_id');
     }
 
+    public function getTypeAttribute(){
+        return Produit::class;
+    }
 
     protected static function boot() {
         parent::boot();

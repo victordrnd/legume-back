@@ -23,11 +23,13 @@ class CreateOrderRequest extends ApiRequest
      */
     public function rules()
     {
+        
         return [
             'booking_id' => 'required|integer|exists:bookings,id',
             'items' => 'required|array',
-            'items.*.id' => 'required|integer|exists:produits,id',
+            'items.*.id' => 'required|integer',
             'items.*.quantity' => 'required|integer|min:0',
+            'items.*.type' => 'required|string|in:App\\Produit,App\\Panier'
         ];
     }
 }
