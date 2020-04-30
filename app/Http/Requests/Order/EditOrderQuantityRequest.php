@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Order;
 
+use App\Http\Requests\ApiRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class EditOrderQuantityRequest extends FormRequest
+class EditOrderQuantityRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +27,8 @@ class EditOrderQuantityRequest extends FormRequest
         return [
             'order_id' => 'required|integer|exists:orders,id',
             'items.*.id' => 'required|integer|exists:produits,id',
-            'items.*.delivered_quantity' => 'required|integer'
+            'items.*.delivered_quantity' => 'required|integer',
+            'items.*.type' => 'required|in:App\Produit'
         ];
     }
 }

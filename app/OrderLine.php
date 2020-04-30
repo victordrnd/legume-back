@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class OrderLine extends Model
 {
     protected $fillable = ['product_id', 'quantity', 'delivered_quantity', 'buyable_type', 'order_id'];
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['order_id','buyable_type','created_at', 'updated_at'];
 
 
     public function item()
