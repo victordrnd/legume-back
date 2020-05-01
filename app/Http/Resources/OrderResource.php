@@ -18,7 +18,7 @@ class OrderResource extends JsonResource
         return [
             'id' => $this->id,
             'preparator' => $this->preparator,
-            'items' => $this->items,
+            'items' => OrderLineResource::collection($this->items),
             'total_price' => $this->items->sum(function($line){
                 if($line->buyable_type == Produit::class)
                     return $line->product['unit_price'] * $line->quantity;
