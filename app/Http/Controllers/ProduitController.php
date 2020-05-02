@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Products\ProductAvailabilityRequest;
+use App\Http\Resources\ImportResource;
 use App\Import;
 use App\Produit;
 use Carbon\Carbon;
@@ -14,10 +15,10 @@ class ProduitController extends Controller
     public function getAllProducts(ProductAvailabilityRequest $req){
         $date = Carbon::parse($req->date) ?? Carbon::now();
         try{
-            $import = Import::where('from', '<=', $date)->where('to', '>=', $date)->orderBy('created_at', 'desc')->with('products.category','paniers.products.product.category')->firstOrFail();
+            $import = Import::where('from', '<=', $date)->where('to', '>', $date)->orderBy('created_at', 'desc')->with('products.category','paniers.products.product.category')->firstOrFail();
         }catch(ModelNotFoundException $e){
             return response()->json(['error' => "Aucun produit n'est disponible pour la période demandée. Réessayez plus tard"], 422);
         }
-        return $import;
+        return ImportResource::make($import);
     }
 }
