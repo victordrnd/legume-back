@@ -39,7 +39,7 @@ class OrderController extends Controller
                 'order_id' => $order->id,
                 'quantity' => $item['quantity'],
                 'product_id' => $item['id'],
-                'delivered_quantity' => 0,
+                'delivered_quantity' => null,
                 'buyable_type' => $item['type']
             ]);
         }
