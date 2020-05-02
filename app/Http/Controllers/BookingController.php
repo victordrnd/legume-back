@@ -41,7 +41,8 @@ class BookingController extends Controller
             $booking = Booking::create([
                 'schedule' => $datetime->toDateTimeString(),
                 'user_id' => auth()->user()->id,
-                'status_id' => Status::where('slug', 'waiting')->first()->id
+                'status_id' => Status::where('slug', 'waiting')->first()->id,
+                'order_id' => null
             ]);
         }else{
             return response()->json(['error' => "L'horraire demandé n'est pas disponible"], 422);
