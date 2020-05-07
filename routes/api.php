@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 Route::post('auth/login', 'AuthController@login');
 Route::post('auth/signup', 'AuthController@signup');
 
+Route::group(['prefix' => 'products'], function(){
+    Route::post('/',            'ProduitController@getAllProducts');
+});
+
 Route::group(['middleware' => 'jwt.verify'], function () {
     Route::get('/auth/current', 'AuthController@getCurrentUser');
     
@@ -37,9 +41,6 @@ Route::group(['middleware' => 'jwt.verify'], function () {
         Route::put('/edit',      'OrderController@editQuantity')->middleware('can:operator');
     });
 
-    Route::group(['prefix' => 'products'], function(){
-        Route::post('/',            'ProduitController@getAllProducts');
-    });
 
     Route::group(['prefix' => 'import', 'middleware' => 'can:administrator'], function(){
         Route::post('/new', 'ImportController@import');
