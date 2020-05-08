@@ -19,8 +19,8 @@ class BookingController extends Controller
         $this->scheduleService = $scheduleService;
     }
     public function getMyBookings(){
-        $coming = Booking::where('user_id', auth()->user()->id)->where('schedule', '>=',Carbon::now())->orderBy('schedule','DESC')->get();
-        $past = Booking::where('user_id', auth()->user()->id)->where('schedule', '<',Carbon::now())->orderBy('schedule', 'DESC')->get();
+        $coming = Booking::where('user_id', auth()->user()->id)->where('schedule', '>=',Carbon::now())->orderBy('schedule','ASC')->get();
+        $past = Booking::where('user_id', auth()->user()->id)->where('schedule', '<',Carbon::now())->orderBy('schedule', 'ASC')->get();
         $data = [
             'coming' => BookingResource::collection($coming),
             'past' => BookingResource::collection($past)
@@ -36,7 +36,7 @@ class BookingController extends Controller
     public function createBooking(BookRequest $request){
         $count = Booking::where('schedule', ">=", Carbon::now())->where('user_id', auth()->user()->id)->count();
         if($count >= 5){
-            return response()->json(['error' => "Vous avez dépassé la limite de 5 réservations à venir."]);
+            return response()->json(['error' => "Vous avez dépassé la limite de 5 réservations à venir."], 403);
         }
         $this->scheduleService->registerSchedule();
         $datetime = Carbon::parse($request->date." ".$request->time);
