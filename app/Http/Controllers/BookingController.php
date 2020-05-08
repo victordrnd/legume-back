@@ -34,7 +34,7 @@ class BookingController extends Controller
      * @var string time "12:00:00"
      */
     public function createBooking(BookRequest $request){
-        $count = Booking::where('schedule', ">=", Carbon::now())->where('user_id', auth()->user->id)->count();
+        $count = Booking::where('schedule', ">=", Carbon::now())->where('user_id', auth()->user()->id)->count();
         if($count >= 5){
             return response()->json(['error' => "Vous avez dépassé la limite de 5 réservations à venir."]);
         }
@@ -58,6 +58,7 @@ class BookingController extends Controller
     public function getAllBookings(Request $req){
         $bookings = Booking::where('schedule' ,'>=', Carbon::now())
                             ->where('status_id', '!=', Status::where('slug', 'canceled')->first()->id)
+                            ->whereIn('status_id', Status::where('slug', 'confirmed')->orWhere('slug', 'preparation')->pluck('id'))
                             ->paginate($req->input('per_page', 15));
         return BookingResource::collection($bookings);
     }
