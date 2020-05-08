@@ -22,7 +22,9 @@ class BookingResource extends JsonResource
             "order_id" => $this->order_id,
             "order" => OrderResource::make($this->whenLoaded('order')),
             "created_at" => $this->created_at->toDateTimeString(),
-            "updated_at" => $this->updated_at->toDateTimeString()
+            "updated_at" => $this->updated_at->toDateTimeString(),
+            "schedule_diff" => $this->schedule->diffForHumans(),
+            "created_at_diff" => $this->created_at->diffForHumans()
         ];
     }
 }
