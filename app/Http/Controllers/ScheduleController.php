@@ -13,6 +13,6 @@ class ScheduleController extends Controller
         $this->scheduleService = $scheduleService;
     }
    public function getAll(){
-       return $this->scheduleService->getAvailability();
+       return ["data" => $this->scheduleService->getAvailability()];
    }
 }
