@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-
+use Carbon\Carbon;
 class BookingResource extends JsonResource
 {
     /**
@@ -23,7 +23,7 @@ class BookingResource extends JsonResource
             "order" => OrderResource::make($this->whenLoaded('order')),
             "created_at" => $this->created_at->toDateTimeString(),
             "updated_at" => $this->updated_at->toDateTimeString(),
-            "schedule_diff" => $this->schedule->diffForHumans(),
+            "schedule_diff" => Carbon::parse($this->schedule)->diffForHumans(),
             "created_at_diff" => $this->created_at->diffForHumans()
         ];
     }
