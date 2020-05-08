@@ -19,8 +19,8 @@ class BookingController extends Controller
         $this->scheduleService = $scheduleService;
     }
     public function getMyBookings(){
-        $coming = Booking::where('user_id', auth()->user()->id)->where('schedule', '>=',Carbon::now())->with('status')->get();
-        $past = Booking::where('user_id', auth()->user()->id)->where('schedule', '<',Carbon::now())->with('status')->get();
+        $coming = Booking::where('user_id', auth()->user()->id)->where('schedule', '>=',Carbon::now())->orderBy('schedule','DESC')->with('status')->get();
+        $past = Booking::where('user_id', auth()->user()->id)->where('schedule', '<',Carbon::now())->orderBy('schedule', 'DESC')->with('status')->get();
         $data = [
             'coming' => $coming,
             'past' => $past
