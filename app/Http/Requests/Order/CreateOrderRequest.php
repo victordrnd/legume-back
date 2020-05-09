@@ -28,7 +28,7 @@ class CreateOrderRequest extends ApiRequest
             'booking_id' => 'required|integer|exists:bookings,id',
             'items' => 'required|array',
             'items.*.id' => 'required|integer',
-            'items.*.quantity' => 'required|integer|min:0',
+            'items.*.quantity' => 'required|numeric|min:0',
             'items.*.type' => 'required|string|in:App\\Produit,App\\Panier'
         ];
     }

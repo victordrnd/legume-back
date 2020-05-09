@@ -11,6 +11,7 @@ use App\Http\Resources\OrderResource;
 use App\Order;
 use App\OrderLine;
 use App\Status;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -34,6 +35,14 @@ class OrderController extends Controller
             return response()->json(['error' => "Un produit/panier n'existe pas dans la base de donnée"]);
         }
         $order = Order::create();
+        try {
+            Booking::where('id', $req->booking_id)->where('user_id', auth()->user()->id)->firstOrFail()->update([
+                'order_id' => $order->id,
+                'status_id' => Status::where('slug', 'confirmed')->first()->id
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Cette réservation ne vous appartient pas'], 422);
+        }
         foreach ($req->items as $item) {
             $count = OrderLine::where('order_id', $order->id)->where('product_id', $item['id'])->where('buyable_type', $item['type'])->count();
             if ($count > 0) {
@@ -53,10 +62,6 @@ class OrderController extends Controller
                 ]);
             }
         }
-        Booking::find($req->booking_id)->update([
-            'order_id' => $order->id,
-            'status_id' => Status::where('slug', 'confirmed')->first()->id
-        ]);
         return OrderResource::make($order);
     }
 
