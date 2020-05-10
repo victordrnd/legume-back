@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Imports\DeleteImportRequest;
 use App\Http\Requests\Imports\ImportRequest;
 use App\Import;
 use App\Imports\SheetsImport;
@@ -12,6 +13,10 @@ use Illuminate\Http\Request;
 
 class ImportController extends Controller
 {
+
+    public function getAll(){
+        return Import::orderBy('from', 'desc')->get();
+    }
     public function import(ImportRequest $req){
         self::deletePreviousImport();
         $import = Import::create([
@@ -24,6 +29,13 @@ class ImportController extends Controller
             return response()->json(['error' => "Une erreur est présente dans le fichier, vérifier qu'aucune case ne soit vide"]);
         }
         return Import::where('id', $import->id)->with('products', 'paniers')->first();
+    }
+
+
+    public function deleteImport(DeleteImportRequest $req){
+        Import::find($req->id)->delete();
+
+        return response()->json(['success' => 'true']);
     }
 
 

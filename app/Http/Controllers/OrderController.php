@@ -67,9 +67,12 @@ class OrderController extends Controller
 
     public function prepareOrder(PrepareOrderRequest $req)
     {
-        //TODO : check if current user is admin
+        
         Order::where('id', $req->order_id)->update([
             'preparator_id' => auth()->user()->id
+        ]);
+        Booking::where('order_id', $req->order_id)->update([
+            'status_id' => Status::where('slug', 'preparation')->first()->id
         ]);
         return OrderResource::make(Order::find($req->order_id));
     }

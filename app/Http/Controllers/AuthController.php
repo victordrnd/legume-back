@@ -9,7 +9,10 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\SignupRequest;
+use App\Http\Requests\Auth\UpdateUserRequest;
+use Exception;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
 
 class AuthController extends Controller
 {
@@ -58,7 +61,14 @@ class AuthController extends Controller
 
 
 
-
+  public function updateCurrentUser(UpdateUserRequest $req){
+    try{
+      User::where('id', auth()->user()->id)->update($req->only('phone', 'lastname', 'firstname'));
+    }catch(Exception $e){
+      return response()->json(['error' => $e->getMessage()], 422);
+    }
+    return User::find(auth()->user()->id);
+  }
 
 
   public function getCurrentUser()

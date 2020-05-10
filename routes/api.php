@@ -22,6 +22,7 @@ Route::group(['prefix' => 'products'], function(){
 
 Route::group(['middleware' => 'jwt.verify'], function () {
     Route::get('/auth/current', 'AuthController@getCurrentUser');
+    Route::put('/auth/user/update', 'AuthController@updateCurrentUser');
     
     Route::group(['prefix' => 'schedule'], function () {
         Route::get('/', 'ScheduleController@getAll');
@@ -43,7 +44,9 @@ Route::group(['middleware' => 'jwt.verify'], function () {
 
 
     Route::group(['prefix' => 'import', 'middleware' => 'can:administrator'], function(){
+        Route::get('/',     'ImportController@getAll');
         Route::post('/new', 'ImportController@import');
+        Route::delete('/',  'ImportController@deleteImport');
     });
 
     
