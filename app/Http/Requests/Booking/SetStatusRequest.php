@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Order;
+namespace App\Http\Requests\Booking;
 
 use App\Http\Requests\ApiRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class EditOrderQuantityRequest extends ApiRequest
+class SetStatusRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,10 +25,8 @@ class EditOrderQuantityRequest extends ApiRequest
     public function rules()
     {
         return [
-            'order_id' => 'required|integer|exists:orders,id',
-            'items.*.id' => 'required|integer',
-            'items.*.delivered_quantity' => 'required|integer',
-            'items.*.type' => 'required|in:App\\Produit,App\\Panier'
+            'status' => 'string|required|in:finished,canceled',
+            'id' => 'integer|required|exists:bookings,id'
         ];
     }
 }

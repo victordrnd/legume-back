@@ -67,7 +67,7 @@ class OrderController extends Controller
 
     public function prepareOrder(PrepareOrderRequest $req)
     {
-        
+
         Order::where('id', $req->order_id)->update([
             'preparator_id' => auth()->user()->id
         ]);
@@ -79,9 +79,24 @@ class OrderController extends Controller
 
     public function editQuantity(EditOrderQuantityRequest $req)
     {
+        $validator = Validator::make($req->all(), [
+            'items' => [function ($attributes, $value, $fail) {
+                foreach ($value as $item) {
+                    $count = $item['type']::where('id', $item['id'])->count();
+                    if ($count == 0) {
+                        $fail("Un produit/panier n'existe pas");
+                    }
+                }
+                return true;
+            }]
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => "Un produit/panier n'existe pas dans la base de donnée"]);
+        }
         foreach ($req->items as $item) {
             OrderLine::where('product_id', $item['id'])
                 ->where('order_id', $req->order_id)
+                ->where('buyable_type', $item['type'])
                 ->update([
                     'delivered_quantity' => $item['delivered_quantity']
                 ]);
