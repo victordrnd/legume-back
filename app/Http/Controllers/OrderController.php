@@ -67,14 +67,25 @@ class OrderController extends Controller
 
     public function prepareOrder(PrepareOrderRequest $req)
     {
-
-        Order::where('id', $req->order_id)->update([
-            'preparator_id' => auth()->user()->id
-        ]);
-        Booking::where('order_id', $req->order_id)->update([
-            'status_id' => Status::where('slug', 'preparation')->first()->id
-        ]);
-        return OrderResource::make(Order::find($req->order_id));
+        $order_ids = Order::where('preparator_id', auth()->user()->id)->pluck('id');
+        $preparing = Booking::whereIn('order_id', $order_ids)->where('status_id', Status::where('slug', 'preparation')->first()->id)->first();
+        if ($preparing) {
+            if ($preparing->order_id != $req->order_id)
+                return response()->json(['error' => 'Vous préparez déjà une commande', 'preparing' => $preparing], 403);
+        }
+        $order = Order::find($req->order_id);
+        if ($order->preparator_id != auth()->user()->id) {
+            $preparator = $order->preparator->fistname;
+            return reponse()->json(['error', "$preparator prépare déjà cette commande"]);
+        } else {
+            $order->update([
+                'preparator_id' => auth()->user()->id
+            ]);
+            Booking::where('order_id', $req->order_id)->update([
+                'status_id' => Status::where('slug', 'preparation')->first()->id
+            ]);
+        }
+        return OrderResource::make($order);
     }
 
     public function editQuantity(EditOrderQuantityRequest $req)
