@@ -95,7 +95,7 @@ class BookingController extends Controller
         return BookingResource::make($booking);
     }
 
-
+    //todo delete
     public function cancelBooking($id)
     {
         $booking = Booking::where('id', $id)->update([

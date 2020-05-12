@@ -51,6 +51,12 @@ Route::group(['middleware' => 'jwt.verify'], function () {
         Route::delete('/',  'ImportController@deleteImport');
     });
 
+
+    Route::group(['prefix' => 'user', 'middleware' => 'can:administrator'], function(){
+        Route::get('/', 'UserController@filter');
+        Route::get('/roles',    'UserController@getAllRoles');
+    });
+
     
 });
 
