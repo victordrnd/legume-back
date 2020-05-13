@@ -25,7 +25,7 @@ class SetStatusRequest extends ApiRequest
     public function rules()
     {
         return [
-            'status' => 'string|required|in:finished,canceled',
+            'status' => 'string|required|in:canceled',
             'id' => 'integer|required|exists:bookings,id'
         ];
     }

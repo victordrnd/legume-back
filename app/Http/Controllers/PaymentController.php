@@ -68,7 +68,7 @@ class PaymentController extends Controller
                     'description' => 'Prélèvement commande #' . $booking->order->id . ' du ' . $booking->schedule
                 ]);
             }catch(\Exception $e){
-                return response()->json(["error" => "Une erreur est survenue lors du paiement", 409]);
+                return response()->json(["error" => $e->getMessage()], 409);
             }
         }
         $booking->status_id = $finished;
