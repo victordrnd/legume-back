@@ -32,6 +32,5 @@ class AppServiceProvider extends ServiceProvider
         Carbon::setLocale('fr');
         OrderResource::withoutWrapping();
         BookingResource::withoutWrapping();
-        
     }
 }

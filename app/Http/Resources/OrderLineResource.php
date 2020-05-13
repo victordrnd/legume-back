@@ -21,6 +21,8 @@ class OrderLineResource extends JsonResource
             'order_id' => $this->order_id,
             'delivered_quantity' => $this->delivered_quantity,
             'buyable_type' => $this->buyable_type,
+            'libelle' => $this->item->libelle,
+            'price' => $this->item->price,
             'product' => ProductResource::make($this->item)
         ];
     }

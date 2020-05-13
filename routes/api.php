@@ -47,6 +47,7 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     Route::group(['prefix' => 'payment'], function(){
         Route::get('/create',   'PaymentController@createPaymentIntent');
         Route::post('/confirm', 'PaymentController@confirmPayment');
+        Route::post('/charge',  'PaymentController@charge');
     });
 
     Route::group(['prefix' => 'import', 'middleware' => 'can:administrator'], function(){

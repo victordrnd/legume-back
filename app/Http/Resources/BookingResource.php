@@ -20,6 +20,7 @@ class BookingResource extends JsonResource
             "user" => $this->user,
             "status" => $this->status,
             "order_id" => $this->order_id,
+            "is_cash" => $this->setup_intent == 'cash',
             "order" => OrderResource::make($this->whenLoaded('order')),
             "created_at" => $this->created_at->toDateTimeString(),
             "updated_at" => $this->updated_at->toDateTimeString(),
