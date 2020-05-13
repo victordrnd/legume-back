@@ -44,6 +44,12 @@ class AuthController extends Controller
     $user = new User();
     $request->merge(['role_id' => Role::where('slug', Role::USER)->first()->id]);
     $user->fill($request->all());
+    $customer = \Stripe\Customer::create([
+      "email" => $user->email,
+      "name" => $user->lastname . ' ' . $user->firstname,
+      "phone" => $user->phone,
+    ]);
+    $user->stripe_id = $customer->id;
     $user->save();
     $credentials = [
       'email' => $request->email,
@@ -61,10 +67,11 @@ class AuthController extends Controller
 
 
 
-  public function updateCurrentUser(UpdateUserRequest $req){
-    try{
+  public function updateCurrentUser(UpdateUserRequest $req)
+  {
+    try {
       User::where('id', auth()->user()->id)->update($req->only('phone', 'lastname', 'firstname'));
-    }catch(Exception $e){
+    } catch (Exception $e) {
       return response()->json(['error' => $e->getMessage()], 422);
     }
     return User::find(auth()->user()->id);

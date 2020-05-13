@@ -44,6 +44,10 @@ Route::group(['middleware' => 'jwt.verify'], function () {
         Route::put('/edit',      'OrderController@editQuantity')->middleware('can:operator');
     });
 
+    Route::group(['prefix' => 'payment'], function(){
+        Route::get('/create',   'PaymentController@createPaymentIntent');
+        Route::post('/confirm', 'PaymentController@confirmPayment');
+    });
 
     Route::group(['prefix' => 'import', 'middleware' => 'can:administrator'], function(){
         Route::get('/',     'ImportController@getAll');
@@ -55,6 +59,7 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     Route::group(['prefix' => 'user', 'middleware' => 'can:administrator'], function(){
         Route::get('/', 'UserController@filter');
         Route::get('/roles',    'UserController@getAllRoles');
+        Route::put('/role',     'UserController@updateRole');
     });
 
     

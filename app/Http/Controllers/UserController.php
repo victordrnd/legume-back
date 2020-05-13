@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\User\UpdateRoleRequest;
 use Illuminate\Http\Request;
 use App\User;
 use App\Role;
@@ -27,8 +28,9 @@ class UserController extends Controller
     }
 
 
-    public function updateRole(Request $req){
-
+    public function updateRole(UpdateRoleRequest $req){
+        $user = User::find($req->id)->update(['role_id' => $req->role_id]);
+        return User::where('id', $req->id)->with('role')->first();
     }
 
 
