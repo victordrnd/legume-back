@@ -29,11 +29,16 @@ class Booking extends Model
 
     public function getPriceAttribute()
     {
-        return $this->order->items->sum(function ($line) {
-            if ($line->buyable_type == Produit::class)
+        if($this->order){
+
+            return $this->order->items->sum(function ($line) {
+                if ($line->buyable_type == Produit::class)
                 return $line->product['unit_price'] * $line->quantity;
-            else
+                else
                 return $line->panier['price'] * $line->quantity;
-        });
+            });
+        }else{
+            return 0;
+        }
     }
 }
