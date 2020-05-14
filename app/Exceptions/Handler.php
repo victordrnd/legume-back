@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -36,7 +38,7 @@ class Handler extends ExceptionHandler
     * @param  \Exception  $exception
     * @return void
     */
-    public function report(Exception $exception)
+    public function report(Throwable $exception)
     {
         //return ['error'];
         parent::report($exception);
@@ -49,18 +51,22 @@ class Handler extends ExceptionHandler
     * @param  \Exception  $exception
     * @return \Illuminate\Http\Response
     */
-    public function render($request, Exception $exception)
+    public function render($request, Throwable $exception)
     {
         if ($this->isHttpException($exception)) {
-            if ($exception->getStatusCode() == 404) {
+            if ($exception->getStatusCode() == 404 ) {
                 return response()->json(['error' => "La route n'existe pas"], 404);
             }else{
                 return response()->json(['error' => get_class($exception)], 404);
             }
         }
-        if ($exception instanceof AuthorizationException) {
-            return response()->json(['error' => "Accès non autorisé"], 401);
+        if($exception instanceof ModelNotFoundException){
+            return response()->json(['error' => $exception->getMessage()], 404);
         }
+        if ($exception instanceof AuthorizationException) {
+            return response()->json(['error' => $exception->getMessage()], 403);
+        }
+
         return parent::render($request, $exception);
     }
 }

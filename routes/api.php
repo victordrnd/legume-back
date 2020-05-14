@@ -17,7 +17,7 @@ Route::post('auth/login', 'AuthController@login');
 Route::post('auth/signup', 'AuthController@signup');
 
 Route::group(['prefix' => 'products'], function(){
-    Route::post('/',            'ProduitController@getAllProducts');
+    Route::post('/','ProduitController@getAllProducts');
 });
 
 Route::group(['middleware' => 'jwt.verify'], function () {
@@ -29,13 +29,12 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     });
 
     Route::group(['prefix' => 'booking'], function(){
-        Route::get('/all',      'BookingController@getAllBookings');
-        Route::get('/my',       'BookingController@getMyBookings');
-        Route::get('/{id}',     'BookingController@getBooking')->where('id', '[0-9]+');
-        Route::get('/order/{order_id}', 'BookingController@getBookingByOrderId')->where('id', '[0-9]+');
-        Route::post('/book',    'BookingController@createBooking');
-        Route::put('/status',   'BookingController@setBookingStatus');
-        Route::delete('/{id}',   'BookingController@cancelBooking')->where('id', '[0-9]+');
+        Route::get('/all',           'BookingController@getAllBookings')->middleware('can:viewAny,App\Booking');
+        Route::get('/my',            'BookingController@getMyBookings');
+        Route::get('/{booking}',     'BookingController@getBooking')->where('id', '[0-9]+')->middleware('can:view,booking');
+        Route::get('/order/{booking:order_id}', 'BookingController@getBookingByOrderId')->where('booking:order_id', '[0-9]+')->middleware('can:view,booking');
+        Route::post('/book',         'BookingController@createBooking')->middleware('can:create,App\Booking');
+        Route::delete('/{booking}',  'BookingController@cancelBooking')->where('id', '[0-9]+')->middleware('can:delete,booking');
     });
 
     Route::group(['prefix' => 'order'], function(){

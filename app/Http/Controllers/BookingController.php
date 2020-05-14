@@ -20,6 +20,8 @@ class BookingController extends Controller
     {
         $this->scheduleService = $scheduleService;
     }
+
+
     public function getMyBookings()
     {
         Booking::where('user_id', auth()->user()->id)
@@ -41,13 +43,6 @@ class BookingController extends Controller
      */
     public function createBooking(BookRequest $request)
     {
-        $count = Booking::where('schedule', ">=", Carbon::now())
-            ->where('user_id', auth()->user()->id)
-            ->where('status_id', '!=',Status::where('slug', 'canceled')->first()->id)
-            ->count();
-        if ($count >= 5) {
-            return response()->json(['error' => "Vous avez dépassé la limite de 5 réservations à venir."], 403);
-        }
         $this->scheduleService->registerSchedule();
         $datetime = Carbon::parse($request->date . " " . $request->time);
         $count = Booking::where('schedule', $datetime)->count();
@@ -77,41 +72,23 @@ class BookingController extends Controller
     }
 
 
-    public function getBooking($id)
+    public function getBooking(Booking $booking)
     {
-        try {
-            $booking = Booking::where('id', $id)->with('order')->firstOrFail();
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => $e->getMessage()], 404);
-        }
-        return BookingResource::make($booking);
+        return BookingResource::make($booking->load('order'));
     }
 
 
-    public function getBookingByOrderId($order_id){
-        try {
-            $booking = Booking::where('order_id', $order_id)->with('order')->firstOrFail();
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => $e->getMessage()], 404);
-        }
-        return BookingResource::make($booking);
+    public function getBookingByOrderId(Booking $booking)
+    {
+        return BookingResource::make($booking->load('order'));
     }
 
-    //todo delete
-    public function cancelBooking($id)
+    public function cancelBooking(Booking $booking)
     {
-        $booking = Booking::where('id', $id)->update([
+        $booking->update([
             'status_id' => Status::where('slug', 'canceled')->first()->id
         ]);
-        return BookingResource::make(Booking::find($id));
+        return BookingResource::make($booking);
     }
 
-
-    public function setBookingStatus(SetStatusRequest $req)
-    {
-        $booking = Booking::where('id', $req->id)->update([
-            'status_id' => Status::where('slug', $req->status)->first()->id
-        ]);
-        return BookingResource::make(Booking::find($req->id));
-    }
 }
