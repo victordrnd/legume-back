@@ -15,7 +15,7 @@ class BookingPolicy
 
     public function before($user, $ability)
     {
-        if ($user->role->slug == 'administrator') {
+        if ($user->role->slug == 'administrator' || $user->role->slug == 'operator') {
             return true;
         } else {
             return null;
