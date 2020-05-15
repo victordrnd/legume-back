@@ -52,22 +52,27 @@ class PaymentController extends Controller
 
     public function charge(ChargeRequest $req)
     {
-        $booking = Booking::where('id', $req->id)->with('order')->first();
+        $booking = Booking::where('id', $req->id)->with('user', 'order')->first();
         $finished = Status::where('slug', 'finished')->first()->id;
         if ($booking->setup_intent != 'cash' && $booking->status_id != $finished) {
             $setup_intent = \Stripe\SetupIntent::retrieve($booking->setup_intent);
-            try{
-                $return = \Stripe\PaymentIntent::create([
+            try {
+                $pm = \Stripe\PaymentIntent::create([
                     'amount' => ceil($booking->price * 100),
                     'currency' => 'eur',
                     'payment_method_types' => ['card'],
-                    'confirm' => true,
+                    'receipt_email' => $booking->user->email,
                     'customer' => $booking->user->stripe_id,
                     'payment_method' => $setup_intent->payment_method,
                     'statement_descriptor' => "remyvouslivre.fr",
                     'description' => 'Prélèvement commande #' . $booking->order->id . ' du ' . $booking->schedule
                 ]);
-            }catch(\Exception $e){
+                $pm->confirm([
+                    'error_on_requires_action' => true,
+                    'off_session' => true,
+                ]);
+                //$pm->capture();
+            } catch (\Exception $e) {
                 return response()->json(["error" => $e->getMessage()], 409);
             }
         }

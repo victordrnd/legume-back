@@ -29,7 +29,7 @@ class BookingController extends Controller
             ->where('schedule', '<', Carbon::now())
             ->where('status_id', Status::where('slug', 'waiting')->first()->id)
             ->update(['status_id' => Status::where('slug', 'canceled')->first()->id]);
-        $coming = Booking::where('user_id', auth()->user()->id)->where('schedule', '>=', Carbon::now())->orderBy('schedule', 'ASC')->get();
+        $coming = Booking::where('user_id', auth()->user()->id)->where('schedule', '>=', Carbon::now())->orderBy('schedule', 'DESC')->get();
         $past = Booking::where('user_id', auth()->user()->id)->where('schedule', '<', Carbon::now())->orderBy('schedule', 'DESC')->get();
         $data = [
             'coming' => BookingResource::collection($coming),
