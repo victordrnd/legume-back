@@ -74,7 +74,7 @@ class OrderController extends Controller
                 return response()->json(['error' => 'Vous préparez déjà une commande', 'preparing' => $preparing], 403);
         }
         $order = Order::find($req->order_id);
-        if ($order->preparator_id != auth()->user()->id) {
+        if ($order->preparator_id != auth()->user()->id && !is_null($order->preparator_id)) {
             $preparator = $order->preparator->fistname;
             return reponse()->json(['error', "$preparator prépare déjà cette commande"]);
         } else {
