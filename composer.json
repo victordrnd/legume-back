@@ -19,7 +19,8 @@
         "nesbot/carbon": "2.34.0 as 1.39.0",
         "nunomaduro/collision": "^4.1",
         "stripe/stripe-php": "^7.32",
-        "tymon/jwt-auth": "1.0.0"
+        "tymon/jwt-auth": "1.0.0",
+        "ext-memcached" : "*"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
