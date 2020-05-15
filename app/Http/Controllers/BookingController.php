@@ -11,6 +11,7 @@ use App\Http\Services\ScheduleService;
 use App\Status;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Cache;
 
 class BookingController extends Controller
 {
@@ -47,6 +48,7 @@ class BookingController extends Controller
         $datetime = Carbon::parse($request->date . " " . $request->time);
         $count = Booking::where('schedule', $datetime)->count();
         if ($count < Booking::MAX_PER_PERIOD && $datetime->isOpen() && $datetime > Carbon::now()) {
+            Cache::forget('schedules');
             $booking = Booking::create([
                 'schedule' => $datetime->toDateTimeString(),
                 'user_id' => auth()->user()->id,
@@ -90,5 +92,4 @@ class BookingController extends Controller
         ]);
         return BookingResource::make($booking);
     }
-
 }
