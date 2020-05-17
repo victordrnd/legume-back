@@ -20,7 +20,7 @@ class CreateOrderLinesTable extends Migration
             $table->unsignedBigInteger('order_id')->index();
             $table->timestamps();
 
-            $table->foreign('product_id')->references('id')->on('produits');
+            //$table->foreign('product_id')->references('id')->on('produits');
             $table->foreign('order_id')->references('id')->on('orders');
         });
     }

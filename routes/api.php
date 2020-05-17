@@ -16,29 +16,52 @@ use Illuminate\Support\Facades\Route;
 Route::post('auth/login', 'AuthController@login');
 Route::post('auth/signup', 'AuthController@signup');
 
+Route::group(['prefix' => 'products'], function(){
+    Route::post('/','ProduitController@getAllProducts');
+});
+
 Route::group(['middleware' => 'jwt.verify'], function () {
     Route::group(['prefix' => 'auth'], function(){
         Route::get('/current', 'AuthController@getCurrentUser');
         Route::post('/resetpassword',  'AuthController@sendMail');
-    });
-    
+        Route::put('/user/update', 'AuthController@updateCurrentUser');
+    });    
     Route::group(['prefix' => 'schedule'], function () {
         Route::get('/', 'ScheduleController@getAll');
     });
 
     Route::group(['prefix' => 'booking'], function(){
-        Route::get('/my',      'BookingController@getMyBookings');
-        Route::post('/book',   'BookingController@createBooking');
-        Route::post('/all',    'BookingController@getAllBookings');
-        Route::get('/{id}',    'BookingController@getBooking')->where('id', '[0-9]+');
+        Route::get('/all',           'BookingController@getAllBookings')->middleware('can:viewAny,App\Booking');
+        Route::get('/my',            'BookingController@getMyBookings');
+        Route::get('/{booking}',     'BookingController@getBooking')->where('id', '[0-9]+')->middleware('can:view,booking');
+        Route::get('/order/{booking:order_id}', 'BookingController@getBookingByOrderId')->where('booking:order_id', '[0-9]+')->middleware('can:view,booking');
+        Route::post('/book',         'BookingController@createBooking')->middleware('can:create,App\Booking');
+        Route::delete('/{booking}',  'BookingController@cancelBooking')->where('id', '[0-9]+')->middleware('can:delete,booking');
     });
 
     Route::group(['prefix' => 'order'], function(){
-        Route::put('/create',   'OrderController@createOrder');
+        Route::post('/create',   'OrderController@createOrder');
+        Route::put('/prepare',   'OrderController@prepareOrder')->middleware('can:operator');
+        Route::put('/edit',      'OrderController@editQuantity')->middleware('can:operator');
     });
 
-    Route::group(['prefix' => 'products'], function(){
-        Route::post('/', 'ProduitController@getAllProducts');
+    Route::group(['prefix' => 'payment'], function(){
+        Route::get('/create',   'PaymentController@createPaymentIntent');
+        Route::post('/confirm', 'PaymentController@confirmPayment');
+        Route::post('/charge',  'PaymentController@charge');
+    });
+
+    Route::group(['prefix' => 'import', 'middleware' => 'can:administrator'], function(){
+        Route::get('/',     'ImportController@getAll');
+        Route::post('/new', 'ImportController@import');
+        Route::delete('/',  'ImportController@deleteImport');
+    });
+
+
+    Route::group(['prefix' => 'user', 'middleware' => 'can:administrator'], function(){
+        Route::get('/', 'UserController@filter');
+        Route::get('/roles',    'UserController@getAllRoles');
+        Route::put('/role',     'UserController@updateRole');
     });
 
     

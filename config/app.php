@@ -152,14 +152,14 @@ return [
     Illuminate\Filesystem\FilesystemServiceProvider::class,
     Illuminate\Foundation\Providers\FoundationServiceProvider::class,
     Illuminate\Hashing\HashServiceProvider::class,
-    Illuminate\Mail\MailServiceProvider::class,
-    Illuminate\Notifications\NotificationServiceProvider::class,
-    Illuminate\Pagination\PaginationServiceProvider::class,
+    // Illuminate\Mail\MailServiceProvider::class,
+    // Illuminate\Notifications\NotificationServiceProvider::class,
+    // Illuminate\Pagination\PaginationServiceProvider::class,
     Illuminate\Pipeline\PipelineServiceProvider::class,
     Illuminate\Queue\QueueServiceProvider::class,
-    Illuminate\Redis\RedisServiceProvider::class,
-    Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
-    Illuminate\Session\SessionServiceProvider::class,
+    // Illuminate\Redis\RedisServiceProvider::class,
+    // Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
+    // Illuminate\Session\SessionServiceProvider::class,
     Illuminate\Translation\TranslationServiceProvider::class,
     Illuminate\Validation\ValidationServiceProvider::class,
     Illuminate\View\ViewServiceProvider::class,
@@ -175,10 +175,10 @@ return [
     */
     App\Providers\AppServiceProvider::class,
     App\Providers\AuthServiceProvider::class,
-    // App\Providers\BroadcastServiceProvider::class,
     App\Providers\EventServiceProvider::class,
     App\Providers\RouteServiceProvider::class,
-    Tymon\JWTAuth\Providers\LaravelServiceProvider::class
+    Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+    Maatwebsite\Excel\ExcelServiceProvider::class
   ],
 
   /*
@@ -227,6 +227,7 @@ return [
     'URL' => Illuminate\Support\Facades\URL::class,
     'Validator' => Illuminate\Support\Facades\Validator::class,
     'View' => Illuminate\Support\Facades\View::class,
+    'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 
   ],
 

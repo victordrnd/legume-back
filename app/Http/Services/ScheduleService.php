@@ -20,11 +20,13 @@ class ScheduleService
             $horraire = $start_date->addMinute(Schedule::PERIOD_TIME);
             if($horraire->isOpen()){
                 $schedule = new Schedule;
-                $schedule->schedule = $horraire->toTimeString();
-                $schedule->availability = Booking::MAX_PER_PERIOD;
                 $current_count = Booking::where('schedule', $horraire->toDateTimeString())->count();
                 $schedule->remaining = Booking::MAX_PER_PERIOD - $current_count;
-                $dates[$start_date->toDateString()][] = $schedule;
+                if($schedule->remaining > 0){
+                    $schedule->schedule = $horraire->toTimeString();
+                    $schedule->availability = Booking::MAX_PER_PERIOD;
+                    $dates[$start_date->toDateString()][] = $schedule;
+                }
             }else{
                 $start_date->nextOpen();
             }
