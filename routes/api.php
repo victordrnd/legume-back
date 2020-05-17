@@ -24,7 +24,7 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     Route::group(['prefix' => 'auth'], function(){
         Route::get('/current', 'AuthController@getCurrentUser');
         Route::post('/resetpassword',  'AuthController@sendMail');
-        Route::put('/user/update', 'AuthController@updateCurrentUser');
+        Route::put('/user/{user}/update', 'AuthController@updateUser')->middleware('can:update,user');
     });    
     Route::group(['prefix' => 'schedule'], function () {
         Route::get('/', 'ScheduleController@getAll');
@@ -33,10 +33,10 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     Route::group(['prefix' => 'booking'], function(){
         Route::get('/all',           'BookingController@getAllBookings')->middleware('can:viewAny,App\Booking');
         Route::get('/my',            'BookingController@getMyBookings');
-        Route::get('/{booking}',     'BookingController@getBooking')->where('id', '[0-9]+')->middleware('can:view,booking');
-        Route::get('/order/{booking:order_id}', 'BookingController@getBookingByOrderId')->where('booking:order_id', '[0-9]+')->middleware('can:view,booking');
+        Route::get('/{booking}',     'BookingController@getBooking')->middleware('can:view,booking');
+        Route::get('/order/{booking:order_id}', 'BookingController@getBookingByOrderId')->middleware('can:view,booking');
         Route::post('/book',         'BookingController@createBooking')->middleware('can:create,App\Booking');
-        Route::delete('/{booking}',  'BookingController@cancelBooking')->where('id', '[0-9]+')->middleware('can:delete,booking');
+        Route::delete('/{booking}',  'BookingController@cancelBooking')->middleware('can:delete,booking');
     });
 
     Route::group(['prefix' => 'order'], function(){

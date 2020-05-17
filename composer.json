@@ -14,12 +14,7 @@
         "guzzlehttp/guzzle": "^6.3",
         "laravel/framework": "7.*",
         "laravel/helpers": "^1.2",
-<<<<<<< HEAD
-        "laravel/tinker": "~1.0",
-        "nesbot/carbon": "^2",
         "phpmailer/phpmailer": "^6.1",
-        "tymon/jwt-auth": "1.0.0-rc.5"
-=======
         "laravel/tinker": "2.*",
         "maatwebsite/excel": "^3.1",
         "nesbot/carbon": "2.34.0 as 1.39.0",
@@ -27,7 +22,6 @@
         "stripe/stripe-php": "^7.32",
         "tymon/jwt-auth": "1.0.0",
         "ext-memcached" : "*"
->>>>>>> develop
     },
     "require-dev": {
         "filp/whoops": "~2.0",

@@ -32,7 +32,7 @@ class AuthController extends Controller
     $data =  [
       'user' => $this->getCurrentUser(),
       'token' => $token,
-      'expire' => auth()->factory()->getTTL() * 60
+      'expire' => \Carbon\Carbon::now()->addMinutes(auth()->factory()->getTTL())->format('Y-m-d H:i:s')
     ];
     return response()->json($data);
   }
@@ -97,21 +97,22 @@ class AuthController extends Controller
     return $user;
   }
 
-  public function updateCurrentUser(UpdateUserRequest $req)
+  public function updateUser(User $user, UpdateUserRequest $req)
   {
     try {
-      auth()->user()->update($req->only('phone', 'lastname', 'firstname'));
+      $changes = $req->only('phone', 'lastname', 'firstname');
+      $user->fill($changes);
+      $user->save();
     } catch (Exception $e) {
       return response()->json(['error' => $e->getMessage()], 422);
     }
-    return User::find(auth()->user()->id);
+    return $user->load('role');
   }
 
 
   public function getCurrentUser()
   {
-    $user =auth()->user()->load('role');
-    return $user;
+    return auth()->user()->load('role');    
   }
 
 

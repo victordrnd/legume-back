@@ -27,7 +27,8 @@ class UpdateUserRequest extends ApiRequest
         return [
             'firstname' => 'required|string',
             'lastname' => 'required|string',
-            'phone' => 'required|numeric'
+            'phone' => 'required|numeric',
+            'role_id' => 'sometimes|integer|exists:roles,id'
         ];
     }
 }
