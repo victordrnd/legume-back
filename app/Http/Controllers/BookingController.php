@@ -85,6 +85,18 @@ class BookingController extends Controller
         return BookingResource::make($booking->load('order'));
     }
 
+
+
+    public function updateBooking(Booking $booking, BookRequest $req){
+        if($booking->status->slug == 'confirmed' || $booking->status->slug == 'waiting'){
+            $booking->schedule = $datetime = Carbon::parse($req->date . " " . $req->time)->toDateTimeString();
+            $booking->save();
+        }else{
+            return response()->json(['error' => "Le status du booking n'est pas compatible avec un changement d'horaire"], 422);
+        }
+        return BookingResource::make($booking);
+    }
+
     public function cancelBooking(Booking $booking)
     {
         $booking->delete();

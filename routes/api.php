@@ -36,6 +36,7 @@ Route::group(['middleware' => 'jwt.verify'], function () {
         Route::get('/{booking}',     'BookingController@getBooking')->middleware('can:view,booking');
         Route::get('/order/{booking:order_id}', 'BookingController@getBookingByOrderId')->middleware('can:view,booking');
         Route::post('/book',         'BookingController@createBooking')->middleware('can:create,App\Booking');
+        Route::put('/{booking}/schedule',   'BookingController@updateBooking')->middleware('can:update,booking');
         Route::delete('/{booking}',  'BookingController@cancelBooking')->middleware('can:delete,booking');
     });
 
