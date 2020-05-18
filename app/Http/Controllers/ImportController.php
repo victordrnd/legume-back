@@ -24,8 +24,11 @@ class ImportController extends Controller
             'to' => $req->to
         ]);
         try{
+            \DB::beginTransaction();
             \Excel::import(new SheetsImport($import->id), request()->file('file'));
+            \DB::commit();
         }catch(Exception $e){
+            \DB::rollBack();
             return response()->json(['error' => "Une erreur est présente dans le fichier, vérifier qu'aucune case ne soit vide"]);
         }
         return Import::where('id', $import->id)->with('products', 'paniers')->first();

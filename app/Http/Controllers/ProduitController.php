@@ -16,7 +16,7 @@ class ProduitController extends Controller
     public function getAllProducts(ProductAvailabilityRequest $req)
     {
 
-        $cached = Cache::remember('products_' . $req->date,Carbon::now()->addDay(), function () use ($req) {
+        $cached = Cache::remember('products_' . $req->date,Carbon::now()->addHours(6), function () use ($req) {
             $date = Carbon::parse($req->date) ?? Carbon::now();
             try {
                 $import = Import::where('from', '<=', $date)->where('to', '>', $date)->orderBy('created_at', 'desc')->with('products.category', 'paniers.products.product.category')->firstOrFail();
