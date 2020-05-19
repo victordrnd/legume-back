@@ -8,6 +8,7 @@ use App\Http\Requests\Order\EditOrderQuantityRequest;
 use App\Http\Requests\Order\PrepareOrderRequest;
 use App\Http\Requests\Order\SetOrderPreparatorRequest;
 use App\Http\Resources\OrderResource;
+use App\Http\Resources\BookingResource;
 use App\Order;
 use App\OrderLine;
 use App\Status;
@@ -76,7 +77,7 @@ class OrderController extends Controller
         $order = Order::find($req->order_id);
         if ($order->preparator_id != auth()->user()->id && !is_null($order->preparator_id)) {
             $preparator = $order->preparator->fistname;
-            return reponse()->json(['error', "$preparator prépare déjà cette commande"]);
+            return reponse()->json(['error', "$preparator prépare déjà cette commande"], 422);
         } else {
             $order->update([
                 'preparator_id' => auth()->user()->id
@@ -88,30 +89,45 @@ class OrderController extends Controller
         return OrderResource::make($order);
     }
 
-    public function editQuantity(EditOrderQuantityRequest $req)
+
+
+
+    public function editQuantity(EditOrderQuantityRequest $req, Order $order)
     {
         $validator = Validator::make($req->all(), [
             'items' => [function ($attributes, $value, $fail) {
                 foreach ($value as $item) {
                     $count = $item['type']::where('id', $item['id'])->count();
                     if ($count == 0) {
-                        $fail("Un produit/panier n'existe pas");
+                        $fail("Le ".$item['type']." #".$item['id']." n'existe pas dans la base de données" );
                     }
                 }
                 return true;
             }]
         ]);
         if ($validator->fails()) {
-            return response()->json(['error' => "Un produit/panier n'existe pas dans la base de donnée"]);
+            return response()->json(['error' => $validator->errors()], 422);
         }
-        foreach ($req->items as $item) {
-            OrderLine::where('product_id', $item['id'])
-                ->where('order_id', $req->order_id)
-                ->where('buyable_type', $item['type'])
-                ->update([
-                    'delivered_quantity' => $item['delivered_quantity']
-                ]);
+        try {
+            $booking =  Booking::where('order_id', $order->id)->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => $e->getMessage()]);
         }
-        return OrderResource::make(Order::find($req->order_id));
+        if ($booking->status->slug == 'preparation') {
+            foreach ($req->items as $item) {
+                OrderLine::where('product_id', $item['id'])
+                    ->where('order_id', $order->id)
+                    ->where('buyable_type', $item['type'])
+                    ->update([
+                        'delivered_quantity' => $item['delivered_quantity']
+                    ]);
+            }
+        }else{
+            return response()->json(['error' => 'Personne ne prépare cette commande'], 422);
+        }
+        
+        $booking->status_id = Status::where('slug', 'prepared')->first()->id;
+        $booking->save();
+        return BookingResource::make(Booking::find($booking->id));
     }
 }

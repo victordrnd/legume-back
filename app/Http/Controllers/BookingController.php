@@ -66,7 +66,7 @@ class BookingController extends Controller
     {
         $bookings = Booking::where('schedule', '>=', Carbon::now())
             ->where('status_id', '!=', Status::where('slug', 'canceled')->first()->id)
-            ->whereIn('status_id', Status::where('slug', 'confirmed')->orWhere('slug', 'preparation')->pluck('id'))
+            ->whereIn('status_id', Status::where('slug', 'confirmed')->orWhere('slug', 'preparation')->orWhere('slug', 'prepared')->pluck('id'))
             ->orderBy('schedule', 'asc')
             ->with('order')
             ->paginate($req->input('per_page', 15));

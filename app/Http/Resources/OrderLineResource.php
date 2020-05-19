@@ -16,13 +16,13 @@ class OrderLineResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
+            'id' => $this->item->id,
             'quantity' => $this->quantity,
             'order_id' => $this->order_id,
             'delivered_quantity' => $this->delivered_quantity,
-            'buyable_type' => $this->buyable_type,
+            'type' => $this->buyable_type,
             'libelle' => $this->item->libelle,
-            'price' => $this->item->price,
+            'price' => ($this->item->price ?? $this->item->unit_price) *$this->quantity,
             'product' => ProductResource::make($this->item)
         ];
     }

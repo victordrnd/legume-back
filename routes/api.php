@@ -43,7 +43,8 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     Route::group(['prefix' => 'order'], function(){
         Route::post('/create',   'OrderController@createOrder');
         Route::put('/prepare',   'OrderController@prepareOrder')->middleware('can:operator');
-        Route::put('/edit',      'OrderController@editQuantity')->middleware('can:operator');
+        // Route::put('/{order}/prepared',  'OrderController@endOrderPreparation')->middleware('can:operator');
+        Route::put('/{order}/edit',      'OrderController@editQuantity')->middleware('can:operator');
     });
 
     Route::group(['prefix' => 'payment'], function(){

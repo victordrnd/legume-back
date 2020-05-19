@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use App\Import;
 use App\Category;
 use App\Produit;
+use App\Status;
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -13,7 +14,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(StatusSeederTableSeeder::class);
-        $this->call(RoleTableSeeder::class);
+        Status::create([
+            'libelle' => 'Préparée',
+            'slug' => 'prepared'
+        ]);
+        // $this->call(StatusSeederTableSeeder::class);
+        // $this->call(RoleTableSeeder::class);
     }
 }
