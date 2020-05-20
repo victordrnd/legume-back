@@ -33,5 +33,9 @@ class StatusSeederTableSeeder extends Seeder
             'libelle' => 'Terminée',
             'slug' => 'finished'
         ]);
+        Status::create([
+            'libelle' => 'Préparée',
+            'slug' => 'prepared'
+        ]);
     }
 }

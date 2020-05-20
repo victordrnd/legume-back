@@ -14,11 +14,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        Status::create([
-            'libelle' => 'Préparée',
-            'slug' => 'prepared'
-        ]);
-        // $this->call(StatusSeederTableSeeder::class);
-        // $this->call(RoleTableSeeder::class);
+       
+        $this->call(StatusSeederTableSeeder::class);
+        $this->call(RoleTableSeeder::class);
     }
 }

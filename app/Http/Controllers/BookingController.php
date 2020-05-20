@@ -26,8 +26,8 @@ class BookingController extends Controller
     public function getMyBookings()
     {
         Booking::where('user_id', auth()->user()->id)
-            ->where('schedule', '<', Carbon::now())
-            ->where('status_id', Status::where('slug', 'waiting')->first()->id)
+            ->where('schedule', '<', Carbon::now()->subHours(6))
+            ->where('status_id', '!=',Status::where('slug', 'finished')->first()->id)
             ->update(['status_id' => Status::where('slug', 'canceled')->first()->id]);
         $coming = Booking::where('user_id', auth()->user()->id)->where('schedule', '>=', Carbon::now())->orderBy('schedule', 'DESC')->with('order')->get();
         $past = Booking::where('user_id', auth()->user()->id)->where('schedule', '<', Carbon::now())->orderBy('schedule', 'DESC')->get();
