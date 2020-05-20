@@ -22,7 +22,7 @@ class OrderLineResource extends JsonResource
             'delivered_quantity' => $this->delivered_quantity,
             'type' => $this->buyable_type,
             'libelle' => $this->item->libelle,
-            'price' => ($this->item->price ?? $this->item->unit_price) *$this->quantity,
+            'price' => round(($this->item->price ?? $this->item->unit_price) *$this->quantity,2),
             'product' => ProductResource::make($this->item)
         ];
     }

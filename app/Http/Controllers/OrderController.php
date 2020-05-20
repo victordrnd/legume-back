@@ -7,6 +7,7 @@ use App\Http\Requests\Order\CreateOrderRequest;
 use App\Http\Requests\Order\EditOrderQuantityRequest;
 use App\Http\Requests\Order\PrepareOrderRequest;
 use App\Http\Requests\Order\SetOrderPreparatorRequest;
+use App\Http\Requests\Order\UpdateOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\BookingResource;
 use App\Order;
@@ -21,19 +22,9 @@ class OrderController extends Controller
 
     public function createOrder(CreateOrderRequest $req)
     {
-        $validator = Validator::make($req->all(), [
-            'items' => [function ($attributes, $value, $fail) {
-                foreach ($value as $item) {
-                    $count = $item['type']::where('id', $item['id'])->count();
-                    if ($count == 0) {
-                        $fail("Un produit/panier n'existe pas");
-                    }
-                }
-                return true;
-            }]
-        ]);
+        $validator = self::verifyIsValidProduct($req);
         if ($validator->fails()) {
-            return response()->json(['error' => "Un produit/panier n'existe pas dans la base de donnée"]);
+            return response()->json(['error' => $validator->errors()], 422);
         }
         $order = Order::create();
         try {
@@ -82,7 +73,7 @@ class OrderController extends Controller
             $order->update([
                 'preparator_id' => auth()->user()->id
             ]);
-            Booking::where('order_id', $req->order_id)->update([
+            $order->booking->update([
                 'status_id' => Status::where('slug', 'preparation')->first()->id
             ]);
         }
@@ -94,26 +85,11 @@ class OrderController extends Controller
 
     public function editQuantity(EditOrderQuantityRequest $req, Order $order)
     {
-        $validator = Validator::make($req->all(), [
-            'items' => [function ($attributes, $value, $fail) {
-                foreach ($value as $item) {
-                    $count = $item['type']::where('id', $item['id'])->count();
-                    if ($count == 0) {
-                        $fail("Le ".$item['type']." #".$item['id']." n'existe pas dans la base de données" );
-                    }
-                }
-                return true;
-            }]
-        ]);
+        $validator = self::verifyIsValidProduct($req);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-        try {
-            $booking =  Booking::where('order_id', $order->id)->firstOrFail();
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => $e->getMessage()]);
-        }
-        if ($booking->status->slug == 'preparation') {
+        if ($order->booking->status->slug == 'preparation') {
             foreach ($req->items as $item) {
                 OrderLine::where('product_id', $item['id'])
                     ->where('order_id', $order->id)
@@ -125,9 +101,57 @@ class OrderController extends Controller
         }else{
             return response()->json(['error' => 'Personne ne prépare cette commande'], 422);
         }
-        
+        $booking = $order->booking;
         $booking->status_id = Status::where('slug', 'prepared')->first()->id;
         $booking->save();
         return BookingResource::make(Booking::find($booking->id));
+    }
+
+
+
+    public function updateOrderProducts(Order $order, UpdateOrderRequest $req){
+        $validator = self::verifyIsValidProduct($req);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+        OrderLine::where('order_id', $order->id)->delete();
+        foreach ($req->items as $item) {
+            $count = OrderLine::where('order_id', $order->id)->where('product_id', $item['id'])->where('buyable_type', $item['type'])->count();
+            if ($count > 0) {
+                $line = OrderLine::where('order_id', $order->id)
+                    ->where('product_id', $item['id'])
+                    ->where('buyable_type', $item['type'])
+                    ->first();
+                $line->quantity += $item['quantity'];
+                $line->save();
+            } else {
+                OrderLine::create([
+                    'order_id' => $order->id,
+                    'quantity' => $item['quantity'],
+                    'product_id' => $item['id'],
+                    'delivered_quantity' => null,
+                    'buyable_type' => $item['type']
+                ]);
+            }
+        }
+        return OrderResource::make($order);
+    }
+
+
+
+
+    public static function verifyIsValidProduct(Request $req){
+        $validator = Validator::make($req->all(), [
+            'items' => [function ($attributes, $value, $fail) {
+                foreach ($value as $item) {
+                    $count = $item['type']::where('id', $item['id'])->count();
+                    if ($count == 0) {
+                        $fail("Le ".$item['type']." #".$item['id']." n'existe pas dans la base de données" );
+                    }
+                }
+                return true;
+            }]
+        ]);
+        return $validator;
     }
 }
