@@ -15,11 +15,11 @@ class ProduitController extends Controller
 {
     public function getAllProducts(ProductAvailabilityRequest $req)
     {
-
-        $cached = Cache::remember('products_' . $req->date,Carbon::now()->addHours(6), function () use ($req) {
-            $date = Carbon::parse($req->date) ?? Carbon::now();
+        $date = Carbon::parse($req->date) ?? Carbon::now();
+        $date = $date->format("Y-m-d");
+        $cached = Cache::remember('products_' . $date,Carbon::now()->addHours(6), function () use ($req, $date) {
             try {
-                $import = Import::where('from', '<=', $date)->where('to', '>', $date)->orderBy('created_at', 'desc')->with('products.category', 'paniers.products.product.category')->firstOrFail();
+                $import = Import::where('from', '<=', $date)->where('to', '>=', $date)->orderBy('created_at', 'desc')->with('products.category', 'paniers.products.product.category')->firstOrFail();
             } catch (ModelNotFoundException $e) {
                 return response()->json(['error' => "Aucun produit n'est disponible pour la période demandée. Réessayez plus tard"], 422);
             }

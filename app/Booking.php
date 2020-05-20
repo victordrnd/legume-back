@@ -30,7 +30,6 @@ class Booking extends Model
     public function getPriceAttribute()
     {
         if($this->order){
-
             return $this->order->items->sum(function ($line) {
                 if ($line->buyable_type == Produit::class)
                 return $line->product['unit_price'] * $line->quantity;
