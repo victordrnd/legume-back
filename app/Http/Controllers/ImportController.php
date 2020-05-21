@@ -18,7 +18,7 @@ class ImportController extends Controller
         return Import::orderBy('from', 'desc')->get();
     }
     public function import(ImportRequest $req){
-        self::deletePreviousImport();
+        //self::deletePreviousImport();
         $import = Import::create([
             'from' => $req->from,
             'to' => $req->to

@@ -99,6 +99,10 @@ class BookingController extends Controller
 
     public function cancelBooking(Booking $booking)
     {
+        if(!is_null($booking->order_id)){
+            $booking->order->items->delete();
+            $booking->order->delete();
+        }
         $booking->delete();
         return response()->json(['success' => 'true']);
     }
